@@ -1,0 +1,40 @@
+server:
+  port: 7001
+spring:
+  application:
+    name: cloud-service-order
+  zipkin:
+    base-url: http://localhost:9411
+    enabled: true
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://101.37.35.73:3306/mall?useSSL=false
+    username: hcon
+    password: hconuser
+    driver-class-name: com.mysql.jdbc.Driver
+    initialSize: 5
+    minIdle: 1
+    maxActive: 20
+    maxWait: 5000
+    filters: stat,wall
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+  sleuth:
+    enabled: true
+    sampler:
+      percentage: 1
+eureka:
+  client:
+    service-url:
+      defaultZoone: http://localhost:8761/eureka/
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+  mapper-locations: /mapper/*.xml
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countsql
+#  type-aliases-package:
