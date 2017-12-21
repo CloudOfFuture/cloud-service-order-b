@@ -5,6 +5,7 @@ import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +20,7 @@ import java.util.List;
  * @version <0.1>
  * @created on 2017/12/21.
  */
+@Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
