@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kunlun.api.mapper.WxOrderMapper">
+
+    <!--查询我的订单列表-->
+    <select id="findByOpenid" resultType="com.kunlun.entity.Order">
+        SELECT id,
+        seller_id,
+        user_id,
+        order_no,
+        good_snapshot_id,
+        delivery_id,
+        order_status,
+        order_type,
+        pay_type,
+        message,
+        good_name,
+        count,
+        good_id,
+        remark,
+        good_fee,
+        payment_fee,
+        reduce_fee,
+        order_fee,
+        refund_fee,
+        use_point
+        FROM t_order
+        WHERE user_id=#{userId}
+        <if test="orderStatus!=null and orderStatus!=''">
+            AND order_status=#{orderStatus}
+        </if>
+        <if test="payType!=null and payType!=''">
+            AND pay_type=#{payType}
+        </if>
+    </select>
+
+    <!--查询订单详情-->
+    <select id="findById" resultType="com.kunlun.entity.Order">
+        SELECT id,
+            seller_id,
+            user_id,
+            order_no,
+            good_snapshot_id,
+            delivery_no,
+            delivery_id,
+            order_status,
+            order_type,
+            pay_type,
+            message,
+            recipients,
+            phone,
+            province,
+            city,
+            area,
+            address,
+            post_code,
+            good_name,
+            count,
+            wx_order_no,
+            create_date,
+            pay_date,
+            delivery_date,
+            good_id,
+            use_ticket,
+            ticket_id,
+            prepay_id,
+            remark,
+            refund_date,
+            update_date,
+            freight_fee,
+            good_fee,
+            payment_fee,
+            reduce_fee,
+            order_fee,
+            refund_fee,
+            send_good_id,
+            operate_point,
+            use_point
+        FROM t_order
+        WHERE id=#{orderId}
+    </select>
+
+    <!--申请退款-->
+    <update id="refund" parameterType="com.kunlun.entity.Order">
+        UPDATE t_order SET order_status='REFUNDING' , refund_date=NOW() WHERE id=#{orderId}
+    </update>
+
+    <!--更新订单状态-->
+    <update id="updateOrderStatus" parameterType="com.kunlun.entity.Order">
+        UPDATE t_order SET order_status=#{orderStatus} WHERE id=#{orderId}
+    </update>
+
+    <!--新增订单-->
+    <insert id="addOrder" parameterType="com.kunlun.entity.Order">
+        INSERT INTO t_order(
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        seller_id,
+        user_id,
+        order_no,
+        good_snapshot_id,
+        delivery_no,
+        delivery_id,
+        order_status,
+        order_type,
+        pay_type,
+        message,
+        recipients,
+        phone,
+        province,
+        city,
+        area,
+        address,
+        post_code,
+        good_name,
+        count,
+        wx_order_no,
+        create_date,
+        good_id,
+        use_ticket,
+        ticket_id,
+        freight_fee,
+        good_fee,
+        payment_fee,
+        reduce_fee,
+        order_fee,
+        operate_point,
+        use_point
+        )VALUES(
+        #{sellerId},
+        #{userId},
+        #{orderNo},
+        #{goodSnapshotId},
+        #{deliveryNo},
+        #{deliveryId},
+        #{orderStatus},
+        #{orderType},
+        #{payType},
+        #{message},
+        #{recipients},
+        #{phone},
+        #{province},
+        #{city},
+        #{area},
+        #{address},
+        #{postCode},
+        #{goodName},
+        #{count},
+        #{wxOrderNo},
+        NOW(),
+        #{goodId},
+        #{useTicket},
+        #{ticketId},
+        #{freightFee},
+        #{goodFee},
+        #{paymentFee},
+        #{reduceFee},
+        #{orderFee},
+        #{operatePoint},
+        #{usePoint}
+        )
+    </insert>
+</mapper>
