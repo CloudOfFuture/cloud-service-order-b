@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kunlun.api.mapper.OrderMapper">
+
+    <select id="list" resultType="com.kunlun.entity.Order">
+        SELECT tor.id,
+        tor.user_id,
+        tor.seller_id,
+        tor.use_point,
+        tor.order_no,
+        tor.good_snapshot_id,
+        tor.delivery_id,
+        tor.order_status,
+        tor.order_type,
+        tor.pay_type,
+        tor.message,
+        tor.order_fee,
+        tor.reduce_fee,
+        tor.payment_fee,
+        tor.good_fee,
+        tor.freight_fee,
+        tor.create_date,
+        tor.pay_date,
+        tor.delivery_date,
+        tor.update_date,
+        tor.recipients,
+        tor.phone,
+        tor.province,
+        tor.city,
+        tor.area,
+        tor.address,
+        tor.post_code,
+        tor.good_name,
+        tor.count,
+        tor.prepay_id,
+        tor.wx_order_no,
+        tor.good_id,
+        tor.remark,
+        tor.use_ticket,
+        tor.ticket_id,
+        tor.operate_point,
+        tor.send_good_id,
+        tor.delivery_no,
+        tg.good_no as goodNo,
+        tg.main_image_url as goodMainImage
+        FROM t_order tor
+        LEFT JOIN t_good_snapshot tg ON tor.good_snapshot_id=tg.id
+    </select>
+
+    <update id="modify">
+        UPDATE t_order SET province=#{province},
+        city=#{city},
+        area=#{area},
+        address=#{address},
+        remark=#{remark},
+        phone=#{phone}
+        WHERE id=#{orderId}
+    </update>
+
+    <select id="findByOrderIdAndSellerId" resultType="com.kunlun.entity.Order">
+        SELECT tor.id,
+        tor.user_id,
+        tor.seller_id,
+        tor.use_point,
+        tor.order_no,
+        tor.good_snapshot_id,
+        tor.delivery_id,
+        tor.order_status,
+        tor.order_type,
+        tor.pay_type,
+        tor.message,
+        tor.order_fee,
+        tor.reduce_fee,
+        tor.payment_fee,
+        tor.good_fee,
+        tor.freight_fee,
+        tor.create_date,
+        tor.pay_date,
+        tor.delivery_date,
+        tor.update_date,
+        tor.recipients,
+        tor.phone,
+        tor.province,
+        tor.city,
+        tor.area,
+        tor.address,
+        tor.post_code,
+        tor.good_name,
+        tor.count,
+        tor.prepay_id,
+        tor.wx_order_no,
+        tor.good_id,
+        tor.remark,
+        tor.use_ticket,
+        tor.ticket_id,
+        tor.operate_point,
+        tor.send_good_id,
+        tor.delivery_no,
+        tg.good_no as goodNo,
+        tg.main_image_url as goodMainImage
+        FROM t_order tor
+        LEFT JOIN t_good_snapshot tg ON tor.good_snapshot_id=tg.id
+        WHERE tor.id=#{oderId} AND tor.seller_id=#{sellerId}
+        <if test="status!=null and status!=''">
+            AND tor.order_status=#{status}
+        </if>
+    </select>
+
+    <update id="refund" parameterType="com.kunlun.entity.Order">
+        UPDATE t_order SET flag=#{flag},remark=#{remark},refund_fee=#{refundFee},update_date=NOW() WHERE id=#{orderId} AND seller_id=#{sellerId}
+    </update>
+</mapper>
