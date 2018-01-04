@@ -5,6 +5,6 @@ spring:
     name: cloud-service-order
   cloud:
     config:
-      uri: http://localhost:8762
+      uri: http://192.168.0.119:8762
       label: master
       profile: dev
