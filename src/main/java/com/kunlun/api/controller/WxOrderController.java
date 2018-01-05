@@ -63,8 +63,6 @@ public class WxOrderController {
         return wxOrderService.findById(orderId);
     }
 
-    //TODO 签收后评价（cloud-service-common）
-
     /**
      * 确认收货
      *
