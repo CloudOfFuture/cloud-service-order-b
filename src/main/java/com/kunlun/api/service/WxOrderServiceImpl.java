@@ -4,11 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.kunlun.api.client.DeliveryClient;
 import com.kunlun.api.client.LogClient;
+import com.kunlun.api.client.SendGoodClient;
 import com.kunlun.api.mapper.WxOrderMapper;
-import com.kunlun.entity.Delivery;
-import com.kunlun.entity.Order;
-import com.kunlun.entity.OrderExt;
-import com.kunlun.entity.OrderLog;
+import com.kunlun.entity.*;
 import com.kunlun.enums.CommonEnum;
 import com.kunlun.result.DataRet;
 import com.kunlun.result.PageResult;
@@ -38,6 +36,9 @@ public class WxOrderServiceImpl implements WxOrderService {
 
     @Autowired
     private LogClient logClient;
+
+    @Autowired
+    private SendGoodClient sendGoodClient;
 
     /**
      * 订单列表
@@ -100,7 +101,9 @@ public class WxOrderServiceImpl implements WxOrderService {
         //订单收货地址
         DataRet<Delivery> deliveryRet = deliveryClient.findById(orderExt.getDeliveryId());
         orderExt.setDelivery(deliveryRet.getBody());
-        //TODO 订单发货信息
+        //订单发货信息
+        DataRet<SendGood> sendGoodRet = sendGoodClient.findById(orderExt.getSendGoodId());
+        orderExt.setSendGood((sendGoodRet.getBody()));
         return new DataRet<>(orderExt);
     }
 
