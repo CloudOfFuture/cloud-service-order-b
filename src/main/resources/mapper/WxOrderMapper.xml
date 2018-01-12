@@ -37,53 +37,53 @@
     </select>
 
     <!--查询订单详情-->
-    <select id="findById" resultType="com.kunlun.entity.Order">
+    <select id="findById" resultType="com.kunlun.entity.OrderExt">
         SELECT id,
-            seller_id,
-            user_id,
-            order_no,
-            good_snapshot_id,
-            delivery_no,
-            delivery_id,
-            order_status,
-            order_type,
-            pay_type,
-            message,
-            recipients,
-            phone,
-            province,
-            city,
-            area,
-            address,
-            post_code,
-            good_name,
-            count,
-            wx_order_no,
-            create_date,
-            pay_date,
-            delivery_date,
-            good_id,
-            use_ticket,
-            ticket_id,
-            prepay_id,
-            remark,
-            refund_date,
-            update_date,
-            freight_fee,
-            good_fee,
-            payment_fee,
-            reduce_fee,
-            order_fee,
-            refund_fee,
-            send_good_id,
-            operate_point,
-            use_point
+        seller_id,
+        user_id,
+        order_no,
+        delivery_id,
+        good_snapshot_id,
+        delivery_no,
+        order_status,
+        order_type,
+        pay_type,
+        message,
+        phone,
+        province,
+        city,
+        area,
+        address,
+        post_code,
+        recipients,
+        good_name,
+        count,
+        wx_order_no,
+        create_date,
+        pay_date,
+        delivery_date,
+        good_id,
+        use_ticket,
+        ticket_id,
+        prepay_id,
+        remark,
+        refund_date,
+        update_date,
+        freight_fee,
+        good_fee,
+        payment_fee,
+        reduce_fee,
+        order_fee,
+        refund_fee,
+        send_good_id,
+        operate_point,
+        use_point
         FROM t_order
         WHERE id=#{orderId}
     </select>
 
     <!--申请退款-->
-    <update id="refund" parameterType="com.kunlun.entity.Order">
+    <update id="applyRefund" parameterType="com.kunlun.entity.Order">
         UPDATE t_order SET order_status='REFUNDING' , refund_date=NOW() WHERE id=#{orderId}
     </update>
 
@@ -163,4 +163,36 @@
         #{usePoint}
         )
     </insert>
+
+    <!--修改预付订单id-->
+    <update id="updatePrepayId">
+        UPDATE t_order SET prepay_id=#{prepayId} WHERE id = #{id}
+    </update>
+
+    <!--查询 申请退款时间大于两天（48小时） 的订单 REFUNDING 60*60*48-->
+    <select id="findRefundingOrder" resultType="com.kunlun.entity.Order">
+        SELECT
+        id,
+        order_no,
+        wx_order_no,
+        refund_fee,
+        payment_fee,
+        order_status
+        FROM t_order
+        WHERE order_status ='REFUNDING'
+        AND refund_fee>0
+        AND UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(refund_date) > 60*10
+    </select>
+
+    <!--查询4-24小时内未支付的订单列表 UNIX_TIMESTAMP秒  60*60*4 -->
+    <select id="findUnPayOrder" resultType="com.kunlun.entity.Order">
+        SELECT
+        id,
+        order_no,
+        wx_order_no,
+        order_status
+        FROM t_order
+        WHERE order_status ='UN_PAY'
+        AND UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(create_date) BETWEEN 60*60*4 AND 60*60*24
+    </select>
 </mapper>

@@ -1,14 +1,22 @@
 package com.kunlun.api.controller;
 
 import com.kunlun.api.service.WxOrderService;
+import com.kunlun.entity.Estimate;
 import com.kunlun.entity.Order;
+import com.kunlun.entity.OrderExt;
 import com.kunlun.result.DataRet;
 import com.kunlun.result.PageResult;
 import com.kunlun.utils.IpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author by kunlun
@@ -44,12 +52,12 @@ public class WxOrderController {
     /**
      * 申请退款/退款金额
      *
-     * @param orderId   订单id
+     * @param orderId 订单id
      * @return
      */
-    @GetMapping("/refund")
-    public DataRet<String> refund(@RequestParam(value = "order_id") Long orderId) {
-        return wxOrderService.refund(orderId);
+    @GetMapping("/applyRefund")
+    public DataRet<String> applyRefund(@RequestParam(value = "orderId") Long orderId) {
+        return wxOrderService.applyRefund(orderId);
     }
 
     /**
@@ -59,46 +67,79 @@ public class WxOrderController {
      * @return
      */
     @GetMapping("/findById")
-    public DataRet<Order> findById(@RequestParam(value = "order_id") Long orderId) {
+    public DataRet<OrderExt> findById(@RequestParam(value = "orderId") Long orderId) {
         return wxOrderService.findById(orderId);
     }
 
     /**
      * 确认收货
      *
-     * @param orderId 订单id
-     * @param request 请求ip
+     * @param orderId   订单id
+     * @param ipAddress 请求ip
      * @return
      */
-    @GetMapping("/confirmByGood")
-    public DataRet<String> confirmByGood(@RequestParam(value = "order_id") Long orderId,
-                                         HttpServletRequest request) {
-        String ipAddress = IpUtil.getIPAddress(request);
+    @PostMapping("/confirmByGood")
+    public DataRet<String> confirmByGood(@RequestParam(value = "orderId") Long orderId,
+                                         @RequestParam(value = "ipAddress", required = false) String ipAddress) {
         return wxOrderService.confirmByGood(orderId, ipAddress);
     }
 
     /**
      * 取消订单
      *
-     * @param orderId 订单id
-     * @param request 请求ip
+     * @param orderId   订单id
+     * @param ipAddress 请求ip
      * @return
      */
-    @GetMapping("/cancelByOrder")
-    public DataRet<String> cancelByOrder(@RequestParam(value = "order_id") Long orderId,
-                                         HttpServletRequest request) {
-        String ipAddress = IpUtil.getIPAddress(request);
+    @PostMapping("/cancelByOrder")
+    public DataRet<String> cancelByOrder(@RequestParam(value = "orderId") Long orderId,
+                                         @RequestParam(value = "ipAddress", required = false) String ipAddress) {
         return wxOrderService.cancelByOrder(orderId, ipAddress);
     }
 
     /**
      * 新增订单
+     *
      * @param order
      * @return
      */
     @PostMapping("/addOrder")
-    public DataRet<String> addOrder(@RequestBody Order order){
+    public DataRet<String> addOrder(@RequestBody Order order) {
         return wxOrderService.addOrder(order);
     }
 
+    /**
+     * 修改订单预付款订单号
+     *
+     * @param id
+     * @param prepayId
+     * @return
+     */
+    @PostMapping("/updatePrepayId")
+    public DataRet<String> updateOrderPrepayId(@RequestParam(value = "id") Long id,
+                                               @RequestParam(value = "prepayId") String prepayId) {
+        return wxOrderService.updateOrderPrepayId(id, prepayId);
+    }
+
+    /**
+     * 查询退款中的订单列表
+     *
+     * @param orderStatus 订单状态
+     * @return
+     */
+    @GetMapping("/findRefundingOrder")
+    public DataRet<List<Order>> findRefundingOrder(@RequestParam(value = "orderStatus") String orderStatus) {
+        return wxOrderService.findRefundingOrder(orderStatus);
+    }
+
+    /**
+     * 查询未付款订单列表
+     *
+     * @param orderStatus
+     * @return
+     */
+    @GetMapping("/findUnPayOrder")
+    public DataRet<List<Order>> findUnPayOrder(@RequestParam(value = "orderStatus") String orderStatus) {
+        return wxOrderService.findUnPayOrder(orderStatus);
+    }
 }

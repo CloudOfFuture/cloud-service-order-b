@@ -2,8 +2,11 @@ package com.kunlun.api.mapper;
 
 import com.github.pagehelper.Page;
 import com.kunlun.entity.Order;
+import com.kunlun.entity.OrderExt;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author by kunlun
@@ -31,7 +34,7 @@ public interface WxOrderMapper {
      * @param orderId
      * @return
      */
-    Order findById(@Param("orderId") Long orderId);
+    OrderExt findById(@Param("orderId") Long orderId);
 
     /**
      * 申请退款
@@ -39,7 +42,7 @@ public interface WxOrderMapper {
      * @param orderId
      * @return
      */
-    int refund(@Param("orderId") Long orderId);
+    int applyRefund(@Param("orderId") Long orderId);
 
     /**
      * 更新订单状态
@@ -53,8 +56,34 @@ public interface WxOrderMapper {
 
     /**
      * 新增订单
+     *
      * @param order
      * @return
      */
     int addOrder(Order order);
+
+    /**
+     * 修改订单预付款订单号
+     *
+     * @param id
+     * @param prepayId
+     * @return
+     */
+    int updatePrepayId(@Param("id") Long id, @Param("prepayId") String prepayId);
+
+    /**
+     * 查询退款中的订单列表
+     *
+     * @param orderStatus
+     * @return
+     */
+    List<Order> findRefundingOrder(@Param("orderStatus") String orderStatus);
+
+    /**
+     * 查询未付款订单列表
+     *
+     * @param orderStatus
+     * @return
+     */
+    List<Order> findUnPayOrder(@Param("orderStatus") String orderStatus);
 }

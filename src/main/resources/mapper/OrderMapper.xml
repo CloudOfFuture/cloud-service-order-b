@@ -4,27 +4,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kunlun.api.mapper.OrderMapper">
 
+    <!--订单列表-->
     <select id="list" resultType="com.kunlun.entity.Order">
         SELECT tor.id,
-        tor.user_id,
         tor.seller_id,
-        tor.use_point,
+        tor.user_id,
         tor.order_no,
         tor.good_snapshot_id,
+        tor.delivery_no,
         tor.delivery_id,
         tor.order_status,
         tor.order_type,
         tor.pay_type,
         tor.message,
-        tor.order_fee,
-        tor.reduce_fee,
-        tor.payment_fee,
-        tor.good_fee,
-        tor.freight_fee,
-        tor.create_date,
-        tor.pay_date,
-        tor.delivery_date,
-        tor.update_date,
         tor.recipients,
         tor.phone,
         tor.province,
@@ -34,19 +26,38 @@
         tor.post_code,
         tor.good_name,
         tor.count,
-        tor.prepay_id,
         tor.wx_order_no,
+        tor.create_date,
+        tor.pay_date,
+        tor.delivery_date,
         tor.good_id,
-        tor.remark,
         tor.use_ticket,
         tor.ticket_id,
-        tor.operate_point,
+        tor.prepay_id,
+        tor.remark,
+        tor.refund_date,
+        tor.update_date,
+        tor.freight_fee,
+        tor.good_fee,
+        tor.payment_fee,
+        tor.reduce_fee,
+        tor.order_fee,
+        tor.refund_fee,
         tor.send_good_id,
-        tor.delivery_no,
+        tor.operate_point,
+        tor.use_point,
         tg.good_no as goodNo,
         tg.main_image_url as goodMainImage
         FROM t_order tor
         LEFT JOIN t_good_snapshot tg ON tor.good_snapshot_id=tg.id
+        WHERE 1=1
+        <if test="searchKey!=null and searchKey!=''">
+            AND CONCAT_WS('',tor.order_status,tor.order_type,tor.recipients,tor.good_name) LIKE #{searchKey}
+        </if>
+        <if test="orderNo!=null and orderNo!=''">AND tor.order_No=#{orderNo}</if>
+        <if test="phone!=null and phone!=''">AND tor.phone=#{phone}</if>
+        <if test="status!=null and status!=''">AND tor.status=#{status}</if>
+        <if test="orderType!=null and orderType!=''">AND tor.order_type=#{orderType}</if>
     </select>
 
     <update id="modify">
@@ -102,13 +113,87 @@
         tg.main_image_url as goodMainImage
         FROM t_order tor
         LEFT JOIN t_good_snapshot tg ON tor.good_snapshot_id=tg.id
-        WHERE tor.id=#{oderId} AND tor.seller_id=#{sellerId}
-        <if test="status!=null and status!=''">
-            AND tor.order_status=#{status}
+        WHERE tor.id=#{orderId} AND tor.seller_id=#{sellerId}
+        <if test="orderStatus!=null and orderStatus!=''">
+            AND tor.order_status=#{orderStatus}
         </if>
     </select>
 
-    <update id="refund" parameterType="com.kunlun.entity.Order">
-        UPDATE t_order SET flag=#{flag},remark=#{remark},refund_fee=#{refundFee},update_date=NOW() WHERE id=#{orderId} AND seller_id=#{sellerId}
+    <!--审核退款-->
+    <update id="auditRefund">
+        UPDATE t_order
+        SET order_status=#{orderStatus},
+        remark=#{remark},
+        refund_fee=#{refundFee},
+        update_date=NOW()
+        WHERE id=#{orderId}
     </update>
+
+    <!--修改订单状态-->
+    <update id="updateOrderStatus">
+        UPDATE t_order SET
+        order_status=#{status}
+        WHERE id = #{id}
+    </update>
+
+    <!--根据订单号查找订单-->
+    <select id="findOrderByOrderNo" resultType="com.kunlun.entity.Order">
+        SELECT * from t_order WHERE order_no = #{orderNo}
+    </select>
+
+    <!--修改订单状态和微信支付订单号-->
+    <update id="modifyOrderStatusAndWxOrderNo">
+        UPDATE t_order SET
+        order_status= #{orderStatus},
+        <if test="wxOrderNo!=null">
+            wx_order_no=#{wxOrderNo},
+        </if>
+        update_date = NOW()
+        WHERE id=#{id}
+    </update>
+
+    <select id="findById" resultType="com.kunlun.entity.Order">
+        SELECT id,
+        seller_id,
+        user_id,
+        order_no,
+        good_snapshot_id,
+        delivery_no,
+        delivery_id,
+        order_status,
+        order_type,
+        pay_type,
+        message,
+        recipients,
+        phone,
+        province,
+        city,
+        area,
+        address,
+        post_code,
+        good_name,
+        count,
+        wx_order_no,
+        create_date,
+        pay_date,
+        delivery_date,
+        good_id,
+        use_ticket,
+        ticket_id,
+        prepay_id,
+        remark,
+        refund_date,
+        update_date,
+        freight_fee,
+        good_fee,
+        payment_fee,
+        reduce_fee,
+        order_fee,
+        refund_fee,
+        send_good_id,
+        operate_point,
+        use_point
+        FROM t_order where id=#{orderId}
+    </select>
+
 </mapper>

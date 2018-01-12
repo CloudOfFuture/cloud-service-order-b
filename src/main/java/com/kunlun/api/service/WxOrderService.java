@@ -1,8 +1,14 @@
 package com.kunlun.api.service;
 
 import com.kunlun.entity.Order;
+import com.kunlun.entity.OrderExt;
 import com.kunlun.result.DataRet;
 import com.kunlun.result.PageResult;
+import com.kunlun.wxentity.OrderCondition;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author by kunlun
@@ -29,7 +35,7 @@ public interface WxOrderService {
      * @param orderId
      * @return
      */
-    DataRet<String> refund(Long orderId);
+    DataRet<String> applyRefund(Long orderId);
 
     /**
      * 查询订单详情
@@ -37,7 +43,7 @@ public interface WxOrderService {
      * @param orderId
      * @return
      */
-    DataRet<Order> findById(Long orderId);
+    DataRet<OrderExt> findById(Long orderId);
 
     /**
      * 确认收货
@@ -58,8 +64,35 @@ public interface WxOrderService {
 
     /**
      * 新增订单
+     *
      * @param order
      * @return
      */
     DataRet<String> addOrder(Order order);
+
+    /**
+     * 修改订单预付款订单号
+     *
+     * @param id
+     * @param prepayId
+     * @return
+     */
+    DataRet<String> updateOrderPrepayId(Long id, String prepayId);
+
+
+    /**
+     * 查询未付款订单列表
+     *
+     * @return List<Order>
+     */
+    DataRet<List<Order>> findUnPayOrder(String orderStatus);
+
+    /**
+     * 查询退款中的订单列表
+     *
+     * @param orderStatus
+     * @return
+     */
+    DataRet<List<Order>> findRefundingOrder(String orderStatus);
+
 }

@@ -19,14 +19,14 @@ public interface OrderMapper {
      * @param orderNo
      * @param phone
      * @param status
-     * @param type
+     * @param orderType
      * @param searchKey
      * @return
      */
     Page<Order> list(@Param("orderNo") String orderNo,
                      @Param("phone") String phone,
                      @Param("status") String status,
-                     @Param("type") String type,
+                     @Param("orderType") String orderType,
                      @Param("searchKey") String searchKey);
 
     /**
@@ -34,12 +34,12 @@ public interface OrderMapper {
      *
      * @param orderId
      * @param sellerId
-     * @param status
+     * @param orderStatus
      * @return
      */
     Order findByOrderIdAndSellerId(@Param("orderId") Long orderId,
                                    @Param("sellerId") Long sellerId,
-                                   @Param("status") String status);
+                                   @Param("orderStatus") String orderStatus);
 
     /**
      * 根据订单id更新订单状态 以及发货信息
@@ -85,5 +85,55 @@ public interface OrderMapper {
      */
     int refund(Order order);
 
+    /**
+     * 修改订单状态
+     *
+     * @param id
+     * @param status
+     * @return
+     */
+    int updateOrderStatus(@Param("id") Long id, @Param("status") String status);
 
+
+    /**
+     * 根据微信订单号查找订单
+     *
+     * @param orderNo
+     * @return
+     */
+    Order findOrderByOrderNo(@Param("orderNo") String orderNo);
+
+    /**
+     * 修改订单状态和微信支付订单号
+     *
+     * @param id
+     * @param orderStatus
+     * @param wxOrderNo
+     * @return
+     */
+    int modifyOrderStatusAndWxOrderNo(@Param("id") Long id,
+                                      @Param("orderStatus") String orderStatus,
+                                      @Param("wxOrderNo") String wxOrderNo);
+
+    /**
+     * 根据id查询详情
+     *
+     * @param orderId
+     * @return
+     */
+    Order findById(@Param("orderId") Long orderId);
+
+    /**
+     * 退款审核
+     *
+     * @param orderId
+     * @param orderStatus
+     * @param refundFee
+     * @param remark
+     * @return int
+     */
+    int auditRefund(@Param("orderId") Long orderId,
+                    @Param("orderStatus") String orderStatus,
+                    @Param("refundFee") Integer refundFee,
+                    @Param("remark") String remark);
 }
